@@ -1,0 +1,25 @@
+
+body {
+  background-color: #ffffff00;
+  
+  padding: 20px;
+}
+h1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.inpt {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+input {
+  padding: 5px;
+  margin: 10px;
+  size: 20;
+}
+button {
+  padding: 5px;
+}
+

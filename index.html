@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Mario Search</title>
+        <link rel="stylesheet" href="css/styles.css" />
+        <link rel="icon" href="assets/icons/favicon.ico" />
+        <style>
+          .bold-text {
+            font-weight: bold;
+          }
+        </style>
+    </head>
+    <body>
+        <div class="head">
+          <h1>Mario Search</h1>
+        </div>
+        <div class="inpt">
+          <input type="search" id="searchInput" placeholder="Yuh" size="50" autofocus />
+          <button onclick="performSearch">Search</button>
+        </div>
+        <script src="js/bangs.js"></script>
+        <script>
+            function performSearch() {
+                let input = document.getElementById("searchInput").value;
+                if (!input.trim()) {
+                    alert("Plz Enter search term");
+                    return;
+                }
+                let bangMatch = null;
+                let searchTerm = input;
+                for (let bang in bangs) {
+                    if (input.startsWith(bang + " ")) {
+                        bangMatch = bang;
+                        searchTerm = input.substring(bang.length + 1).trim();
+                        break;
+                    }
+                }
+                let url;
+
+
+                if (bangMatch) {
+                  url = bangs[bangMatch].replace(
+                      "{search}",
+                      encodeURIComponent(searchTerm),
+                  );
+                } else {
+                    url =
+                        "https://www.google.com/search?q=" +
+                        encodeURIComponent(input);
+                }
+                window.location.href = url;
+            }
+            document
+                .getElementById("searchInput")
+                .addEventListener("keypress", function (e) {
+                    if (e.key === "Enter") {
+                        performSearch();
+                    }
+                });
+        </script>
+    </body>
+</html>
