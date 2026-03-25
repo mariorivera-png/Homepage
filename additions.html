@@ -12,10 +12,10 @@
             <h1>Add Bang</h1>
         </div>
         <div class="input-section">
-            <h3>Add New bangs</h3>
+            <h3>Add New Command</h3>
             <div class="input-group">
-                <label for="bangs-input">Bang:</label>
-                <input type="text" id="bangs-input" placeholder="!g" />
+                <label for="command-input">Bang:</label>
+                <input type="text" id="command-input" placeholder="!g" />
             </div>
             <div class="input-group">
                 <label for="url-input">URL Template:</label>
@@ -25,7 +25,7 @@
                     placeholder="https://www.google.com/search?q={search}"
                 />
             </div>
-            <button onclick="addbangs()">Add bangs</button>
+            <button onclick="addCommand()">Add Command</button>
 
             <div id="error-message" class="error"></div>
             <div id="success-message" class="success"></div>
@@ -44,161 +44,5 @@
         <div class="new">
             <a href="index.html">Back to Search</a>
         </div>
-        <script>
-            // Function to render the table
-            function renderTable() {
-                const container = document.getElementById("table-container");
-
-                if (Object.keys(bangs).length === 0) {
-                    container.innerHTML =
-                        '<p style="text-align: center; color: #666;">No bangss added yet. Use the form above to add some!</p>';
-                    return;
-                }
-
-                const tableHTML = `
-              <table class="bangs-table">
-                <thead>
-                  <tr>
-                    <th>bangs</th>
-                    <th>URL Template</th>
-                    <th style="width: 80px;">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${Object.entries(bangs)
-                      .map(
-                          ([key, value]) => `
-                    <tr data-bangs="${key}">
-                      <td><strong>${escapeHtml(key)}</strong></td>
-                      <td><code>${escapeHtml(value)}</code></td>
-                      <td style="text-align: center;">
-                        <button class="delete-btn" onclick="deletebangs('${escapeHtml(key)}')">Delete</button>
-                      </td>
-                    </tr>
-                  `,
-                      )
-                      .join("")}
-                </tbody>
-              </table>
-            `;
-
-                container.innerHTML = tableHTML;
-            }
-
-            // Helper function to escape HTML to prevent XSS
-            function escapeHtml(str) {
-                const div = document.createElement("div");
-                div.textContent = str;
-                return div.innerHTML;
-            }
-
-            // Function to add a new bangs
-            function addbangs() {
-                const bangsInput = document.getElementById("bangs-input");
-                const urlInput = document.getElementById("url-input");
-                const errorDiv = document.getElementById("error-message");
-                const successDiv = document.getElementById("success-message");
-
-                const bangs = bangsInput.value.trim();
-                const url = urlInput.value.trim();
-
-                // Hide previous messages
-                errorDiv.style.display = "none";
-                successDiv.style.display = "none";
-
-                // Validation
-                if (!bangs || !url) {
-                    showError("Both fields are required!");
-                    return;
-                }
-
-                if (!bangs.startsWith("!")) {
-                    showError('bangs should start with "!" (e.g., !w)');
-                    return;
-                }
-
-                if (bangss.hasOwnProperty(bangs)) {
-                    showError(`bangs "${bangs}" already exists!`);
-                    return;
-                }
-
-                if (!url.includes("{search}")) {
-                    showError(
-                        "URL template should include {search} placeholder",
-                    );
-                    return;
-                }
-
-                // Add the new bangs
-                bangss[bangs] = url;
-
-                // Clear inputs
-                bangsInput.value = "";
-                urlInput.value = "";
-
-                // Show success message
-                successDiv.textContent = `bangs "${bangs}" added successfully!`;
-                successDiv.style.display = "block";
-
-                // Re-render the table
-                renderTable();
-
-                // Auto-hide success message after 3 seconds
-                setTimeout(() => {
-                    successDiv.style.display = "none";
-                }, 3000);
-            }
-
-            // Function to delete a bangs
-            function deletebangs(bangs) {
-                if (
-                    confirm(`Are you sure you want to delete bangs "${bangs}"?`)
-                ) {
-                    delete bangss[bangs];
-                    renderTable();
-
-                    // Show temporary success message
-                    const successDiv =
-                        document.getElementById("success-message");
-                    successDiv.textContent = `bangs "${bangs}" deleted successfully!`;
-                    successDiv.style.display = "block";
-
-                    setTimeout(() => {
-                        successDiv.style.display = "none";
-                    }, 3000);
-                }
-            }
-
-            // Helper function to show error messages
-            function showError(message) {
-                const errorDiv = document.getElementById("error-message");
-                errorDiv.textContent = message;
-                errorDiv.style.display = "block";
-
-                setTimeout(() => {
-                    errorDiv.style.display = "none";
-                }, 3000);
-            }
-
-            // Initialize the table when page loads
-            renderTable();
-
-            // Optional: Add Enter key support
-            document
-                .getElementById("bangs-input")
-                .addEventListener("keypress", function (e) {
-                    if (e.key === "Enter") {
-                        document.getElementById("url-input").focus();
-                    }
-                });
-
-            document
-                .getElementById("url-input")
-                .addEventListener("keypress", function (e) {
-                    if (e.key === "Enter") {
-                        addbangs();
-                    }
-                });
-        </script>
     </body>
 </html>
