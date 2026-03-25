@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Command Manager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .input-section {
+      background-color: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .input-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    
+    input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    
+    button:hover {
+      background-color: #45a049;
+    }
+    
+    .command-table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    
+    .command-table th,
+    .command-table td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+    
+    .command-table th {
+      background-color: #4CAF50;
+      color: white;
+    }
+    
+    .command-table tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    
+    .delete-btn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .delete-btn:hover {
+      background-color: #da190b;
+    }
+    
+    .error {
+      color: red;
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #ffebee;
+      border-radius: 4px;
+      display: none;
+    }
+    
+    .success {
+      color: green;
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #e8f5e9;
+      border-radius: 4px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Command Manager</h1>
+  
+  <!-- Input Section -->
+  <div class="input-section">
+    <h3>Add New Command</h3>
+    <div class="input-group">
+      <label for="command-input">Command (e.g., !w):</label>
+      <input type="text" id="command-input" placeholder="Enter command prefix...">
+    </div>
+    <div class="input-group">
+      <label for="url-input">URL Template:</label>
+      <input type="text" id="url-input" placeholder="Enter URL template with {search}...">
+    </div>
+    <button onclick="addCommand()">Add Command</button>
+    
+    <div id="error-message" class="error"></div>
+    <div id="success-message" class="success"></div>
+  </div>
+  
+  <!-- Table Section -->
+  <h3>Existing Commands</h3>
+  <div id="table-container"></div>
+  
+  <script>
+    // Initial data
+    let commands = {
+      "!w": "https://en.wikipedia.org/wiki/{search}",
+      "!yt": "https://youtube.com/results?search_query={search}",
+      "!g": "https://google.com/search?q={search}"
+    };
+    
+    // Function to render the table
+    function renderTable() {
+      const container = document.getElementById('table-container');
+      
+      if (Object.keys(commands).length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #666;">No commands added yet. Use the form above to add some!</p>';
+        return;
+      }
+      
+      const tableHTML = `
+        <table class="command-table">
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>URL Template</th>
+              <th style="width: 80px;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${Object.entries(commands).map(([key, value]) => `
+              <tr data-command="${key}">
+                <td><strong>${escapeHtml(key)}</strong></td>
+                <td><code>${escapeHtml(value)}</code></td>
+                <td style="text-align: center;">
+                  <button class="delete-btn" onclick="deleteCommand('${escapeHtml(key)}')">Delete</button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      
+      container.innerHTML = tableHTML;
+    }
+    
+    // Helper function to escape HTML to prevent XSS
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+    
+    // Function to add a new command
+    function addCommand() {
+      const commandInput = document.getElementById('command-input');
+      const urlInput = document.getElementById('url-input');
+      const errorDiv = document.getElementById('error-message');
+      const successDiv = document.getElementById('success-message');
+      
+      const command = commandInput.value.trim();
+      const url = urlInput.value.trim();
+      
+      // Hide previous messages
+      errorDiv.style.display = 'none';
+      successDiv.style.display = 'none';
+      
+      // Validation
+      if (!command || !url) {
+        showError('Both fields are required!');
+        return;
+      }
+      
+      if (!command.startsWith('!')) {
+        showError('Command should start with "!" (e.g., !w)');
+        return;
+      }
+      
+      if (commands.hasOwnProperty(command)) {
+        showError(`Command "${command}" already exists!`);
+        return;
+      }
+      
+      if (!url.includes('{search}')) {
+        showError('URL template should include {search} placeholder');
+        return;
+      }
+      
+      // Add the new command
+      commands[command] = url;
+      
+      // Clear inputs
+      commandInput.value = '';
+      urlInput.value = '';
+      
+      // Show success message
+      successDiv.textContent = `Command "${command}" added successfully!`;
+      successDiv.style.display = 'block';
+      
+      // Re-render the table
+      renderTable();
+      
+      // Auto-hide success message after 3 seconds
+      setTimeout(() => {
+        successDiv.style.display = 'none';
+      }, 3000);
+    }
+    
+    // Function to delete a command
+    function deleteCommand(command) {
+      if (confirm(`Are you sure you want to delete command "${command}"?`)) {
+        delete commands[command];
+        renderTable();
+        
+        // Show temporary success message
+        const successDiv = document.getElementById('success-message');
+        successDiv.textContent = `Command "${command}" deleted successfully!`;
+        successDiv.style.display = 'block';
+        
+        setTimeout(() => {
+          successDiv.style.display = 'none';
+        }, 3000);
+      }
+    }
+    
+    // Helper function to show error messages
+    function showError(message) {
+      const errorDiv = document.getElementById('error-message');
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        errorDiv.style.display = 'none';
+      }, 3000);
+    }
+    
+    // Initialize the table when page loads
+    renderTable();
+    
+    // Optional: Add Enter key support
+    document.getElementById('command-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        document.getElementById('url-input').focus();
+      }
+    });
+    
+    document.getElementById('url-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        addCommand();
+      }
+    });
+  </script>
+</body>
+</html>

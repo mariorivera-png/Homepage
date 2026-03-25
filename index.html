@@ -7,18 +7,31 @@
         <link rel="stylesheet" href="css/styles.css" />
         <link rel="icon" href="assets/icons/favicon.ico" />
         <style>
-          .bold-text {
-            font-weight: bold;
-          }
+            .bold-text {
+                font-weight: bold;
+            }
         </style>
     </head>
     <body>
         <div class="head">
-          <h1>Mario Search</h1>
+            <h1>Mario Search</h1>
         </div>
         <div class="inpt">
-          <input type="search" id="searchInput" placeholder="Yuh" size="50" autofocus />
-          <button onclick="performSearch">Search</button>
+            <input
+                type="search"
+                id="searchInput"
+                placeholder="!bang search term"
+                size="50"
+                autofocus
+            />
+        </div>
+
+        <div
+            id="lst"
+            style="color: gray; font-family: &quot;NerdFontSymbols&quot;"
+        ></div>
+        <div class="new">
+            <a href="additions.html">Add New Bang</a>
         </div>
         <script src="js/bangs.js"></script>
         <script>
@@ -39,13 +52,16 @@
                 }
                 let url;
 
+                const inputElement = document.getElementById("searchInput");
 
                 if (bangMatch) {
-                  url = bangs[bangMatch].replace(
-                      "{search}",
-                      encodeURIComponent(searchTerm),
-                  );
+                    inputElement.classList.add("bold-text");
+                    url = bangs[bangMatch].replace(
+                        "{search}",
+                        encodeURIComponent(searchTerm),
+                    );
                 } else {
+                    inputElement.classList.remove("bold-text");
                     url =
                         "https://www.google.com/search?q=" +
                         encodeURIComponent(input);
@@ -60,5 +76,6 @@
                     }
                 });
         </script>
+        <script src="js/list.js"></script>
     </body>
 </html>

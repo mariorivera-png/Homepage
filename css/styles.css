@@ -1,4 +1,12 @@
 
+@font-face {
+  font-family: 'NerdFontSymbols';
+  src:local('Maple Mono NF'),
+      url('/Users/mariorivera/Library/Fonts/MapleMono-NF-Regular.ttf')
+      format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 body {
   background-color: #ffffff00;
   
@@ -8,6 +16,7 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family:'NerdFontSymbols';
 }
 .inpt {
   display: flex;
@@ -17,9 +26,40 @@ h1 {
 input {
   padding: 5px;
   margin: 10px;
-  size: 20;
+  font-family:'NerdFontSymbols';
+  font-size: 15px;
 }
 button {
-  padding: 5px;
+  padding: 20px;
+  margin: 10px;
+  font-size: 15px;
+  font-family: 'NerdFontSymbols';
 }
+.new{
+  
+  display: flex;
+  justify-content: end;
+}
+a {
+  font-family: 'NerdFontSymbols';
+  color: blue;
+}
+.lst {
+  padding: 20px;
+  max-width: 1200px;
+  font-family:'NerdFontSymbols';
+  color: gray;
+}
+.lst th,
+.lst td{
+  padding: 5px;
+  text-align: left;
+}
+.lst tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+/*.lst tr:hover {
+  background-color: #ddd;
+}*/
+
 
