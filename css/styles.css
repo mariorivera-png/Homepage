@@ -1,65 +1,68 @@
-
 @font-face {
-  font-family: 'NerdFontSymbols';
-  src:local('Maple Mono NF'),
-      url('/Users/mariorivera/Library/Fonts/MapleMono-NF-Regular.ttf')
-      format('truetype');
-  font-weight: normal;
-  font-style: normal;
+    font-family: "NerdFontSymbols";
+    src:
+        local("Maple Mono NF"),
+        url(MapleMono-NF-Regular.ttf) format("truetype");
+    font-weight: normal;
+    font-style: normal;
 }
 body {
-  background-color: #ffffff00;
-  
-  padding: 20px;
+    background-color: #ffffff00;
+
+    padding: 20px;
 }
 h1 {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family:'NerdFontSymbols';
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "NerdFontSymbols";
 }
 .inpt {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 input {
-  padding: 5px;
-  margin: 10px;
-  font-family:'NerdFontSymbols';
-  font-size: 15px;
+    padding: 5px;
+    margin: 10px;
+    font-family: "NerdFontSymbols";
+    font-size: 15px;
 }
 button {
-  padding: 20px;
-  margin: 10px;
-  font-size: 15px;
-  font-family: 'NerdFontSymbols';
+    padding: 20px;
+    margin: 10px;
+    font-size: 15px;
+    font-family: "NerdFontSymbols";
 }
-.new{
-  
-  display: flex;
-  justify-content: end;
+.new {
+    display: flex;
+    justify-content: end;
 }
 a {
-  font-family: 'NerdFontSymbols';
-  color: blue;
+    font-family: "NerdFontSymbols";
+    color: blue;
 }
 .lst {
-  padding: 20px;
-  max-width: 1200px;
-  font-family:'NerdFontSymbols';
-  color: gray;
+    padding: 20px;
+    max-width: 1200px;
+    font-family: "NerdFontSymbols";
+    color: gray;
 }
 .lst th,
-.lst td{
-  padding: 5px;
-  text-align: left;
+.lst td {
+    padding: 5px;
+    text-align: left;
 }
 .lst tr:nth-child(even) {
-  background-color: #f2f2f2;
+    background-color: #f2f2f2;
+}
+code {
+    font-family: "NerdFontSymbols";
 }
 /*.lst tr:hover {
   background-color: #ddd;
 }*/
 
-
+.bold-text {
+    font-weight: bold;
+}
