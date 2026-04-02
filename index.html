@@ -15,7 +15,7 @@
             <input
                 type="search"
                 id="searchInput"
-                placeholder="!bang search term"
+                placeholder="!bang!bang2 search term"
                 size="50"
                 autofocus
             />
@@ -31,39 +31,117 @@
         </div--->
         <script src="js/bangs.js"></script>
         <script>
+            function parseBangs(input) {
+                const availableBangs = Object.keys(bangs);
+                let remainingInput = input;
+                let foundBangs = [];
+
+                // Keep trying to match bangs from the beginning
+                while (remainingInput.length > 0) {
+                    let matched = false;
+
+                    // Try to find a bang at the current position
+                    for (let bang of availableBangs) {
+                        if (remainingInput.startsWith(bang + " ")) {
+                            foundBangs.push(bang);
+                            remainingInput = remainingInput.substring(bang.length + 1).trim();
+                            matched = true;
+                            break;
+                        } else if (remainingInput.startsWith(bang)) {
+                            // Check if this is immediately followed by another bang or space
+                            const nextChar = remainingInput[bang.length];
+                            if (nextChar === undefined || nextChar === ' ' || nextChar === '!') {
+                                foundBangs.push(bang);
+                                remainingInput = remainingInput.substring(bang.length);
+                                matched = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // If no bang matched, break out of the loop
+                    if (!matched) {
+                        break;
+                    }
+                }
+
+                // If we found bangs, the remaining input is the search term
+                // Otherwise, treat the whole input as search term
+                if (foundBangs.length > 0) {
+                    return { bangs: foundBangs, searchTerm: remainingInput.trim() };
+                } else {
+                    return { bangs: [], searchTerm: input };
+                }
+            }
+
             function performSearch() {
                 let input = document.getElementById("searchInput").value;
                 if (!input.trim()) {
                     alert("Plz Enter search term");
                     return;
                 }
-                let bangMatch = null;
-                let searchTerm = input;
-                for (let bang in bangs) {
-                    if (input.startsWith(bang + " ")) {
-                        bangMatch = bang;
-                        searchTerm = input.substring(bang.length + 1).trim();
-                        break;
-                    }
-                }
-                let url;
 
+                const { bangs: foundBangs, searchTerm } = parseBangs(input);
                 const inputElement = document.getElementById("searchInput");
 
-                if (bangMatch) {
-                    inputElement.classList.add("bold-text");
-                    url = bangs[bangMatch].replace(
-                        "{search}",
-                        encodeURIComponent(searchTerm),
-                    );
-                } else {
+                // If no bangs found, use Google search
+                if (foundBangs.length === 0) {
                     inputElement.classList.remove("bold-text");
-                    url =
-                        "https://www.google.com/search?q=" +
-                        encodeURIComponent(input);
+                    const url = "https://www.google.com/search?q=" + encodeURIComponent(input);
+                    window.location.href = url;
+                    return;
                 }
-                window.location.href = url;
+
+                // If we have bangs, process them
+                inputElement.classList.add("bold-text");
+
+                // If search term is empty, show alert
+                if (!searchTerm) {
+                    alert("Please enter a search term after the bangs");
+                    return;
+                }
+
+                // Collect all valid URLs
+                const urls = [];
+                const invalidBangs = [];
+
+                for (let bangCode of foundBangs) {
+                    // Check if the bang exists in our bangs object
+                    if (bangs[bangCode]) {
+                        const url = bangs[bangCode].replace(
+                            "{search}",
+                            encodeURIComponent(searchTerm)
+                        );
+                        urls.push(url);
+                    } else {
+                        invalidBangs.push(bangCode);
+                    }
+                }
+
+                // Show warning for invalid bangs
+                if (invalidBangs.length > 0) {
+                    alert(`Warning: The following bangs were not found: ${invalidBangs.join(', ')}`);
+                }
+
+                // Open all valid URLs in new tabs
+                if (urls.length > 0) {
+                    for (let i = 0; i < urls.length; i++) {
+                        if (i === 0) {
+                            // Open first URL in current tab
+                            window.location.href = urls[i];
+                        } else {
+                            // Open remaining URLs in new tabs
+                            window.open(urls[i], '_blank');
+                        }
+                    }
+                } else {
+                    // If no valid bangs found, fall back to Google
+                    alert("No valid bangs found. Searching on Google instead.");
+                    const url = "https://www.google.com/search?q=" + encodeURIComponent(searchTerm || input);
+                    window.location.href = url;
+                }
             }
+
             document
                 .getElementById("searchInput")
                 .addEventListener("keypress", function (e) {

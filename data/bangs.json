@@ -1,0 +1,61 @@
+{
+  "bangs": [
+    {
+      "id": "g",
+      "name": "Google",
+      "url": "https://www.google.com/search?q={search}",
+      "category": "search",
+      "description": "General web search",
+      "example": "!g cats",
+      "enabled": true,
+      "created": "2024-01-01",
+      "usageCount": 0
+    },
+    {
+      "id": "yt",
+      "name": "YouTube",
+      "url": "https://www.youtube.com/results?search_query={search}",
+      "category": "video",
+      "description": "Search videos on YouTube",
+      "example": "!yt funny cats",
+      "enabled": true,
+      "created": "2024-01-01",
+      "usageCount": 0
+    },
+    {
+      "id": "pin",
+      "name": "Pinterest",
+      "url": "https://www.pinterest.com/search/pins/?q={search}",
+      "category": "social",
+      "description": "Find inspiration and ideas",
+      "example": "!pin home decor",
+      "enabled": true,
+      "created": "2024-01-01",
+      "usageCount": 0
+    },
+    {
+      "id": "gh",
+      "name": "GitHub",
+      "url": "https://github.com/search?q={search}",
+      "category": "development",
+      "description": "Search code and repositories",
+      "example": "!gh react",
+      "enabled": true,
+      "created": "2024-01-01",
+      "usageCount": 0
+    }
+  ],
+  "categories": {
+    "search": "Search Engines",
+    "video": "Video Platforms",
+    "social": "Social Media",
+    "development": "Developer Tools",
+    "shopping": "Shopping",
+    "reference": "Reference & Documentation"
+  },
+  "settings": {
+    "defaultSearch": "https://www.google.com/search?q={search}",
+    "openInNewTab": false,
+    "showSuggestions": true
+  }
+}

@@ -1,3 +1,6 @@
+:root {
+  color-scheme: light dark;
+}
 @font-face {
     font-family: "NerdFontSymbols";
     src:
@@ -7,7 +10,7 @@
     font-style: normal;
 }
 body {
-    background-color: #ffffff00;
+    background-color: light-dark(#ffffff4D, #0000004D);
 
     padding: 20px;
 }
@@ -23,11 +26,18 @@ h1 {
     align-items: center;
 }
 input {
-    padding: 5px;
+    padding: 15px;
+    border-radius: 30px;
     margin: 10px;
     font-family: "NerdFontSymbols";
     font-size: 15px;
-}
+    background-color: light-dark(#ffffffCC, #f1f1f1CC);
+    box-shadow: 0px 0px 50px #f1f1f1;
+    color: black;
+    border-style: solid;
+    border-width: 1px;
+    border-color: light-dark(gray, white);
+  }
 button {
     padding: 20px;
     margin: 10px;
@@ -46,7 +56,8 @@ a {
     padding: 20px;
     max-width: 1200px;
     font-family: "NerdFontSymbols";
-    color: gray;
+    color: light-dark(rgba(00, 00, 00, 0.5), rgba(255, 255, 255, 0.5));
+    border-radius: 10px;
 }
 .lst th,
 .lst td {
@@ -54,7 +65,7 @@ a {
     text-align: left;
 }
 .lst tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: light-dark(rgba(00, 00, 00, 0.2), rgba(255, 255, 255, 0.1));
 }
 code {
     font-family: "NerdFontSymbols";

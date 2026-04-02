@@ -1,0 +1,249 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mario Search - Admin Panel</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .bang-form {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .bang-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .bang-table th, .bang-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .bang-table th {
+            background: #f5f5f5;
+            font-weight: bold;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .search-box {
+            margin-bottom: 20px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .category-filter {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <h1>Bang Management</h1>
+        
+        <div class="bang-form">
+            <h2>Add New Bang</h2>
+            <form id="addBangForm">
+                <div class="form-group">
+                    <label for="bangId">Bang ID (e.g., 'g' for !g):</label>
+                    <input type="text" id="bangId" required placeholder="g">
+                </div>
+                <div class="form-group">
+                    <label for="bangName">Display Name:</label>
+                    <input type="text" id="bangName" required placeholder="Google">
+                </div>
+                <div class="form-group">
+                    <label for="bangUrl">URL Template (use {search} as placeholder):</label>
+                    <input type="text" id="bangUrl" required placeholder="https://google.com/search?q={search}">
+                </div>
+                <div class="form-group">
+                    <label for="bangCategory">Category:</label>
+                    <select id="bangCategory" required>
+                        <option value="search">Search Engines</option>
+                        <option value="video">Video Platforms</option>
+                        <option value="social">Social Media</option>
+                        <option value="development">Developer Tools</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="reference">Reference & Documentation</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="bangDescription">Description:</label>
+                    <textarea id="bangDescription" rows="3" placeholder="What does this bang do?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="bangExample">Example:</label>
+                    <input type="text" id="bangExample" placeholder="!g search term">
+                </div>
+                <button type="submit" class="btn btn-primary">Add Bang</button>
+            </form>
+        </div>
+        
+        <div>
+            <h2>Existing Bangs</h2>
+            <input type="text" id="searchBangs" class="search-box" placeholder="Search bangs...">
+            <div class="category-filter">
+                <label>Filter by category:</label>
+                <select id="categoryFilter">
+                    <option value="all">All Categories</option>
+                </select>
+            </div>
+            <table class="bang-table" id="bangTable">
+                <thead>
+                    <tr>
+                        <th>Bang</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Usage</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="bangTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="js/bangs-manager.js"></script>
+    <script>
+        let currentBangs = [];
+        
+        async function loadAndDisplayBangs() {
+            await bangsManager.loadBangs();
+            currentBangs = bangsManager.getAllBangs();
+            displayBangs();
+            populateCategoryFilter();
+        }
+        
+        function displayBangs() {
+            const searchTerm = document.getElementById('searchBangs').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            
+            let filtered = currentBangs;
+            
+            if (searchTerm) {
+                filtered = filtered.filter(b => 
+                    b.id.toLowerCase().includes(searchTerm) ||
+                    b.name.toLowerCase().includes(searchTerm) ||
+                    b.description.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (categoryFilter !== 'all') {
+                filtered = filtered.filter(b => b.category === categoryFilter);
+            }
+            
+            const tbody = document.getElementById('bangTableBody');
+            tbody.innerHTML = '';
+            
+            filtered.forEach(bang => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>!${bang.id}</td>
+                    <td>${bang.name}</td>
+                    <td>${bang.category}</td>
+                    <td>${bang.description || '-'}</td>
+                    <td>${bang.usageCount || 0}</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="deleteBang('${bang.id}')">Delete</button>
+                        <button class="btn" onclick="toggleBang('${bang.id}')">${bang.enabled ? 'Disable' : 'Enable'}</button>
+                    </td>
+                `;
+            });
+        }
+        
+        function populateCategoryFilter() {
+            const select = document.getElementById('categoryFilter');
+            const categories = [...new Set(currentBangs.map(b => b.category))];
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                select.appendChild(option);
+            });
+        }
+        
+        async function deleteBang(id) {
+            if (confirm('Are you sure you want to delete this bang?')) {
+                bangsManager.deleteBang(id);
+                await bangsManager.saveBangs();
+                loadAndDisplayBangs();
+            }
+        }
+        
+        async function toggleBang(id) {
+            const bang = bangsManager.getBang(id);
+            if (bang) {
+                bangsManager.updateBang(id, { enabled: !bang.enabled });
+                await bangsManager.saveBangs();
+                loadAndDisplayBangs();
+            }
+        }
+        
+        document.getElementById('addBangForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const newBang = {
+                id: document.getElementById('bangId').value,
+                name: document.getElementById('bangName').value,
+                url: document.getElementById('bangUrl').value,
+                category: document.getElementById('bangCategory').value,
+                description: document.getElementById('bangDescription').value,
+                example: document.getElementById('bangExample').value
+            };
+            
+            if (bangsManager.addBang(newBang)) {
+                await bangsManager.saveBangs();
+                loadAndDisplayBangs();
+                document.getElementById('addBangForm').reset();
+                alert('Bang added successfully!');
+            } else {
+                alert('Bang with this ID already exists!');
+            }
+        });
+        
+        document.getElementById('searchBangs').addEventListener('input', displayBangs);
+        document.getElementById('categoryFilter').addEventListener('change', displayBangs);
+        
+        loadAndDisplayBangs();
+    </script>
+</body>
+</html>
